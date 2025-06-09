@@ -41,6 +41,7 @@
         <li><RouterLink @click.native="toggleMenu" to="/product" class="block hover:text-yellow-300 transition">Product</RouterLink></li>
         <li><RouterLink @click.native="toggleMenu" to="/team" class="block hover:text-yellow-300 transition">Team</RouterLink></li>
         <li><RouterLink @click.native="toggleMenu" to="/comments" class="block hover:text-yellow-300 transition">Comments</RouterLink></li>
+        <li><RouterLink @click.native="toggleMenu" to="/checkout" class="block hover:text-yellow-300 transition">Checkout</RouterLink></li>
       </ul>
     </transition>
   </nav>
