@@ -1,16 +1,15 @@
-<!-- src/views/CheckoutView.vue -->
 <template>
   <div class="max-w-2xl mx-auto p-6 bg-white rounded shadow mt-6">
     <h1 class="text-2xl font-bold mb-4">Checkout</h1>
 
-    <div v-if="cartItems.length === 0">
+    <div v-if="checkoutItems.length === 0">
       <p class="text-gray-600">Keranjang kosong.</p>
     </div>
 
     <div v-else>
       <ul class="mb-4">
         <li
-          v-for="item in cartItems"
+          v-for="item in checkoutItems"
           :key="item.id"
           class="flex justify-between items-center mb-4 border p-2 rounded"
         >
@@ -47,7 +46,7 @@
         ></textarea>
         <button
           type="submit"
-          class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+          class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 cursor-pointer"
         >
           Selesaikan Pembelian
         </button>
@@ -63,18 +62,41 @@
 <script setup>
 import { computed, ref } from 'vue'
 import { useCartStore } from '../stores/cart'
+import { useOrderStore } from '../stores/order'  // import order store
 import { toast } from 'vue3-toastify'
 import 'vue3-toastify/dist/index.css'
 
 const cart = useCartStore()
+const orderStore = useOrderStore()
 const name = ref('')
 const address = ref('')
 const successMessage = ref('')
 
-const cartItems = computed(() => cart.items)
+const checkoutItems = computed(() => cart.checkoutItems)
 const totalPrice = computed(() => cart.total)
 
 const handleCheckout = () => {
+  if (checkoutItems.value.length === 0) {
+    toast.error('Keranjang kosong, tidak bisa checkout!')
+    return
+  }
+  
+  const newOrder = {
+    id: Date.now(),
+    customerName: name.value,
+    customerAddress: address.value,
+    items: checkoutItems.value.map(item => ({
+      id: item.id,
+      title: item.title,
+      price: item.price,
+      quantity: item.quantity,
+    })),
+    total: totalPrice.value,
+    date: new Date().toLocaleString(),
+  }
+
+  orderStore.addOrder(newOrder)
+
   toast.success(`Pembelian oleh ${name.value} berhasil!`, {
     autoClose: 3000,
     position: 'top-right',
@@ -86,10 +108,5 @@ const handleCheckout = () => {
   cart.clearCart()
   name.value = ''
   address.value = ''
-
-  // Optional: redirect ke halaman Home setelah beberapa detik
-  // setTimeout(() => {
-  //   window.location.href = '/'
-  // }, 3000)
 }
 </script>

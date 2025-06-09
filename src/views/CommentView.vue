@@ -39,7 +39,7 @@
 
       <button
         type="submit"
-        class="bg-purple-700 text-white px-5 py-2 rounded hover:bg-purple-800 transition"
+        class="bg-purple-700 text-white px-5 py-2 rounded hover:bg-purple-800 transition cursor-pointer"
       >
         Kirim Komentar
       </button>
@@ -102,13 +102,13 @@
           <div class="flex space-x-3">
             <button
               @click="updateComment(comment.id)"
-              class="bg-green-600 text-white px-4 py-1 rounded hover:bg-green-700 transition"
+              class="bg-green-600 text-white px-4 py-1 rounded hover:bg-green-700 transition cursor-pointer"
             >
               Simpan
             </button>
             <button
               @click="cancelEdit"
-              class="bg-gray-400 text-white px-4 py-1 rounded hover:bg-gray-500 transition"
+              class="bg-gray-400 text-white px-4 py-1 rounded hover:bg-gray-500 transition cursor-pointer"
             >
               Batal
             </button>
