@@ -3,7 +3,7 @@
     <h1 class="text-2xl font-bold mb-6">Login</h1>
     <form @submit.prevent="handleLogin" class="space-y-4">
       <input
-        v-model="email"
+        v-model.trim="email"
         type="email"
         placeholder="Email"
         class="w-full p-2 border rounded"
@@ -40,7 +40,32 @@ const email = ref('')
 const password = ref('')
 const errorMessage = ref('')
 
+function validate() {
+  errorMessage.value = ''
+  if (!email.value) {
+    errorMessage.value = 'Email wajib diisi'
+    return false
+  }
+  // regex sederhana validasi email
+  const emailRegex = /^\S+@\S+\.\S+$/
+  if (!emailRegex.test(email.value)) {
+    errorMessage.value = 'Format email tidak valid'
+    return false
+  }
+  if (!password.value) {
+    errorMessage.value = 'Password wajib diisi'
+    return false
+  }
+  if (password.value.length < 6) {
+    errorMessage.value = 'Password minimal 6 karakter'
+    return false
+  }
+  return true
+}
+
 const handleLogin = () => {
+  if (!validate()) return
+
   const success = userStore.login({
     email: email.value,
     password: password.value,

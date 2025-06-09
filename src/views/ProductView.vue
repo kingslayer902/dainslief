@@ -1,4 +1,4 @@
-<template>
+<template> 
   <div class="p-6 max-w-5xl mx-auto">
     <h1 class="text-3xl font-bold mb-6">Produk</h1>
 
@@ -40,11 +40,16 @@
           />
           <!-- Judul produk klik ke detail -->
           <h2
-            class="text-lg font-semibold text-center mb-2 cursor-pointer"
+            class="text-lg font-semibold text-center mb-1 cursor-pointer"
             @click="goToDetail(product.id)"
           >
             {{ product.title }}
           </h2>
+
+          <!-- Rating -->
+          <div class="text-yellow-500 text-sm mb-2">
+            ★ {{ getAverageRating(product.id) }}
+          </div>
 
           <!-- Tombol Favorite -->
           <button
@@ -150,5 +155,14 @@ function btnClass(category) {
       ? 'bg-blue-600 text-white border-blue-600'
       : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-100',
   ].join(' ')
+}
+
+// Mendapatkan rating rata-rata dari localStorage
+function getAverageRating(productId) {
+  const reviews = JSON.parse(localStorage.getItem('reviews') || '[]')
+  const filtered = reviews.filter(r => r.productId === productId)
+  if (filtered.length === 0) return 'Belum ada'
+  const avg = filtered.reduce((sum, r) => sum + r.rating, 0) / filtered.length
+  return avg.toFixed(1)
 }
 </script>

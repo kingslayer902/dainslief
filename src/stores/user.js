@@ -1,6 +1,6 @@
 // src/stores/user.js
 import { defineStore } from 'pinia'
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 
 export const useUserStore = defineStore('user', () => {
   // Data user yang sudah terdaftar, termasuk default user
@@ -25,8 +25,12 @@ export const useUserStore = defineStore('user', () => {
     },
   ])
 
-  // User yang sedang login
-  const user = ref(null)
+  // Ambil user dari localStorage kalau ada
+  const storedUser = localStorage.getItem('user')
+  const user = ref(storedUser ? JSON.parse(storedUser) : null)
+
+  // Getter untuk cek apakah user sudah login
+  const isLoggedIn = computed(() => !!user.value)
 
   // Register user baru (cek email)
   function register(newUser) {
@@ -53,6 +57,7 @@ export const useUserStore = defineStore('user', () => {
     )
     if (found) {
       user.value = { ...found }
+      localStorage.setItem('user', JSON.stringify(user.value)) // simpan ke localStorage
       return true
     }
     return false
@@ -61,6 +66,7 @@ export const useUserStore = defineStore('user', () => {
   // Logout user
   function logout() {
     user.value = null
+    localStorage.removeItem('user') // hapus dari localStorage
   }
 
   // Update nama atau foto
@@ -75,11 +81,15 @@ export const useUserStore = defineStore('user', () => {
       users.value[idx].name = name
       users.value[idx].photoURL = photoURL
     }
+
+    // Update localStorage juga
+    localStorage.setItem('user', JSON.stringify(user.value))
   }
 
   return {
     users,
     user,
+    isLoggedIn,
     register,
     login,
     logout,

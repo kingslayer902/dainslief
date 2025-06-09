@@ -62,7 +62,7 @@
 <script setup>
 import { computed, ref } from 'vue'
 import { useCartStore } from '../stores/cart'
-import { useOrderStore } from '../stores/order'  // import order store
+import { useOrderStore } from '../stores/order'
 import { toast } from 'vue3-toastify'
 import 'vue3-toastify/dist/index.css'
 
@@ -83,8 +83,8 @@ const handleCheckout = () => {
   
   const newOrder = {
     id: Date.now(),
-    customerName: name.value,
-    customerAddress: address.value,
+    name: name.value,           // Ganti customerName -> name
+    address: address.value,     // Ganti customerAddress -> address
     items: checkoutItems.value.map(item => ({
       id: item.id,
       title: item.title,

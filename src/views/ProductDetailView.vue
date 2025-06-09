@@ -39,6 +39,10 @@
         </div>
       </div>
     </div>
+
+    <!-- Review -->
+    <ReviewForm v-if="product" :productId="product.id" @review-submitted="refreshReviews" />
+    <ReviewList v-if="product" :productId="product.id" />
   </div>
 </template>
 
@@ -49,6 +53,9 @@ import axios from 'axios'
 import { useCartStore } from '../stores/cart'
 import { useWishlistStore } from '../stores/wishlist'
 import { toast } from 'vue3-toastify'
+
+import ReviewForm from '../components/ReviewForm.vue'
+import ReviewList from '../components/ReviewList.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -72,6 +79,10 @@ onMounted(async () => {
     loading.value = false
   }
 })
+
+function refreshReviews() {
+  // Kosongkan dulu, kalau pakai sistem reactive bisa diisi ulang di sini
+}
 
 function formatRupiah(value) {
   const idr = value * 15000

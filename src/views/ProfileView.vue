@@ -1,9 +1,9 @@
 <template>
-  <div class="max-w-md mx-auto mt-12 bg-white p-6 shadow rounded text-center">
+  <div v-if="user" class="max-w-md mx-auto mt-12 bg-white p-6 shadow rounded text-center">
     <div class="mb-4">
       <img
-        v-if="photoURL"
-        :src="photoURL"
+        v-if="formPhotoURL"
+        :src="formPhotoURL"
         alt="Profile Photo"
         class="w-24 h-24 rounded-full mx-auto object-cover"
       />
@@ -15,8 +15,8 @@
       </div>
     </div>
 
-    <h1 class="text-2xl font-bold mb-2">{{ name }}</h1>
-    <p class="text-gray-700 mb-4">Email: {{ email }}</p>
+    <h1 class="text-2xl font-bold mb-2">{{ formName }}</h1>
+    <p class="text-gray-700 mb-4">Email: {{ formEmail }}</p>
 
     <form @submit.prevent="updateProfile" class="space-y-4 text-left max-w-sm mx-auto">
       <label class="block">
@@ -29,6 +29,7 @@
           required
         />
       </label>
+
       <label class="block">
         <span class="text-gray-700">Photo URL</span>
         <input
@@ -42,8 +43,9 @@
       <button
         type="submit"
         class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 w-full cursor-pointer"
+        :disabled="loading"
       >
-        Update Profile
+        {{ loading ? 'Updating...' : 'Update Profile' }}
       </button>
     </form>
 
@@ -51,48 +53,86 @@
       Logout
     </button>
   </div>
+
+  <div v-else class="text-center mt-12">
+    <p>Loading user data...</p>
+  </div>
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { useUserStore } from '../stores/user'
 import { useRouter } from 'vue-router'
+import { toast } from 'vue3-toastify'
 
 const userStore = useUserStore()
 const router = useRouter()
 
-// Extract user data with fallback
-const user = userStore.user || {}
-const name = computed(() => user.name || 'User')
-const email = computed(() => user.email || '')
-const photoURL = computed(() => user.photoURL || null)
+const user = computed(() => userStore.user)
 
-// For input form, create reactive refs
-const formName = ref(name.value)
-const formPhotoURL = ref(photoURL.value)
+const loading = ref(false)
 
-// Generate initials from name
-const initials = computed(() => {
-  if (!formName.value) return ''
-  return formName.value
-    .split(' ')
-    .map(n => n[0])
-    .join('')
-    .toUpperCase()
-})
+// Form fields
+const formName = ref('')
+const formPhotoURL = ref('')
+const formEmail = ref('')
 
-// Update profile method
-function updateProfile() {
-  userStore.updateProfile({
-    name: formName.value.trim(),
-    photoURL: formPhotoURL.value.trim() || null,
-  })
-  alert('Profile updated!')
+// Inisialisasi form dari data user
+const initForm = () => {
+  formName.value = user.value?.name || ''
+  formPhotoURL.value = user.value?.photoURL || ''
+  formEmail.value = user.value?.email || ''
 }
 
-// Logout method
+watch(user, (newUser) => {
+  if (!newUser) {
+    router.push('/login')
+  } else {
+    initForm()
+  }
+}, { immediate: true })
+
+function isValidUrl(string) {
+  try {
+    if (!string) return true
+    new URL(string)
+    return true
+  } catch (_) {
+    return false
+  }
+}
+
+async function updateProfile() {
+  if (!formName.value.trim()) {
+    toast.error('Nama tidak boleh kosong')
+    return
+  }
+  if (!isValidUrl(formPhotoURL.value)) {
+    toast.error('URL foto tidak valid')
+    return
+  }
+
+  loading.value = true
+  try {
+    userStore.updateProfile({
+      name: formName.value.trim(),
+      photoURL: formPhotoURL.value.trim() || null
+    })
+    toast.success('Profil berhasil diperbarui!')
+  } catch (e) {
+    toast.error('Gagal memperbarui profil')
+  } finally {
+    loading.value = false
+  }
+}
+
 function logout() {
   userStore.logout()
   router.push('/login')
 }
+
+const initials = computed(() => {
+  const parts = formName.value.trim().split(' ')
+  return parts.map(p => p[0]).join('').toUpperCase().slice(0, 2)
+})
 </script>

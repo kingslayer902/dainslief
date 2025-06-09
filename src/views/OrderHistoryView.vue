@@ -14,11 +14,11 @@
             <p><strong>Alamat:</strong> {{ order.address }}</p>
             <p><strong>Tanggal:</strong> {{ order.date }}</p>
           </div>
-          <div class="font-semibold text-green-600">Total: Rp{{ order.total.toFixed(2) }}</div>
+          <div class="font-semibold text-green-600">Total: Rp{{ order.total.toLocaleString() }}</div>
         </div>
         <ul class="list-disc ml-6">
-          <li v-for="item in order.items" :key="item.id">
-            {{ item.title }} x{{ item.quantity }} - Rp{{ (item.price * item.quantity).toFixed(2) }}
+          <li v-for="item in order.items" :key="item.id + '-' + order.id">
+            {{ item.title }} x{{ item.quantity }} - Rp{{ (item.price * item.quantity).toLocaleString() }}
           </li>
         </ul>
       </div>

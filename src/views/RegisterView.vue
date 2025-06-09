@@ -3,7 +3,7 @@
     <h1 class="text-2xl font-bold mb-6">Register</h1>
     <form @submit.prevent="handleRegister" class="space-y-4">
       <input
-        v-model="email"
+        v-model.trim="email"
         type="email"
         placeholder="Email"
         class="w-full p-2 border rounded"
@@ -42,13 +42,36 @@ const password = ref('')
 const errorMessage = ref('')
 const successMessage = ref('')
 
+function validate() {
+  errorMessage.value = ''
+  if (!email.value) {
+    errorMessage.value = 'Email wajib diisi'
+    return false
+  }
+  const emailRegex = /^\S+@\S+\.\S+$/
+  if (!emailRegex.test(email.value)) {
+    errorMessage.value = 'Format email tidak valid'
+    return false
+  }
+  if (!password.value) {
+    errorMessage.value = 'Password wajib diisi'
+    return false
+  }
+  if (password.value.length < 6) {
+    errorMessage.value = 'Password minimal 6 karakter'
+    return false
+  }
+  return true
+}
+
 const handleRegister = () => {
+  if (!validate()) return
+
   const newUser = { email: email.value, password: password.value }
   if (userStore.register(newUser)) {
     successMessage.value = 'Registrasi berhasil! Silakan login.'
     errorMessage.value = ''
     toast.success('Registrasi berhasil!')
-    // Bisa redirect ke login
     router.push('/login')
   } else {
     errorMessage.value = 'Email sudah terdaftar!'
