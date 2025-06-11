@@ -15,7 +15,7 @@ import ProfileView from '@/views/ProfileView.vue'
 import ResetPasswordView from '@/views/ResetPasswordView.vue'
 import ProductDetailView from '@/views/ProductDetailView.vue'
 import CartView from '@/views/CartView.vue'
-
+import ContactView from '@/views/ContactView.vue'
 const routes = [
   { path: '/', name: 'Home', component: HomeView },
   { path: '/about', name: 'About', component: AboutView },
@@ -31,6 +31,9 @@ const routes = [
   { path: '/reset-password', name: 'ResetPassword', component: ResetPasswordView },
   { path: '/productdetail/:id', name: 'productdetail', component: ProductDetailView },
   {path: '/cart',name: 'cart', component: CartView},
+  {path: '/contact', name: 'contact',component: ContactView},
+  {path:'/tracking',name: 'tracking', component: () => import('@/views/TrackingView.vue')},
+
 ]
 
 const router = createRouter({
