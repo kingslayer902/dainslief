@@ -40,43 +40,21 @@ const email = ref('')
 const password = ref('')
 const errorMessage = ref('')
 
-function validate() {
-  errorMessage.value = ''
-  if (!email.value) {
-    errorMessage.value = 'Email wajib diisi'
-    return false
-  }
-  // regex sederhana validasi email
-  const emailRegex = /^\S+@\S+\.\S+$/
-  if (!emailRegex.test(email.value)) {
-    errorMessage.value = 'Format email tidak valid'
-    return false
-  }
-  if (!password.value) {
-    errorMessage.value = 'Password wajib diisi'
-    return false
-  }
-  if (password.value.length < 6) {
-    errorMessage.value = 'Password minimal 6 karakter'
-    return false
-  }
-  return true
-}
-
 const handleLogin = () => {
-  if (!validate()) return
+  const savedUsers = JSON.parse(localStorage.getItem('users')) || []
 
-  const success = userStore.login({
-    email: email.value,
-    password: password.value,
-  })
+  const found = savedUsers.find(
+    (u) => u.email === email.value && u.password === password.value
+  )
 
-  if (success) {
-    toast.success('Login berhasil!')
-    errorMessage.value = ''
-    router.push('/')
-  } else {
-    errorMessage.value = 'Email atau password salah'
+  if (!found) {
+    toast.error('Email atau password salah!')
+    errorMessage.value = 'Email atau password salah!'
+    return
   }
+
+  userStore.login(found)
+  toast.success('Login berhasil!')
+  router.push('/')
 }
 </script>

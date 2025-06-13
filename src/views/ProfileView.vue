@@ -72,12 +72,10 @@ const user = computed(() => userStore.user)
 
 const loading = ref(false)
 
-// Form fields
 const formName = ref('')
 const formPhotoURL = ref('')
 const formEmail = ref('')
 
-// Inisialisasi form dari data user
 const initForm = () => {
   formName.value = user.value?.name || ''
   formPhotoURL.value = user.value?.photoURL || ''
@@ -102,7 +100,7 @@ function isValidUrl(string) {
   }
 }
 
-async function updateProfile() {
+function updateProfile() {
   if (!formName.value.trim()) {
     toast.error('Nama tidak boleh kosong')
     return

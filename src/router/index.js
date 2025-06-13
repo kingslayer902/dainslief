@@ -1,6 +1,5 @@
 // src/router/index.js
 import { createRouter, createWebHistory } from 'vue-router'
-import { useUserStore } from '@/stores/user'
 
 import HomeView from '../views/HomeView.vue'
 import AboutView from '../views/AboutView.vue'
@@ -16,6 +15,7 @@ import ResetPasswordView from '@/views/ResetPasswordView.vue'
 import ProductDetailView from '@/views/ProductDetailView.vue'
 import CartView from '@/views/CartView.vue'
 import ContactView from '@/views/ContactView.vue'
+
 const routes = [
   { path: '/', name: 'Home', component: HomeView },
   { path: '/about', name: 'About', component: AboutView },
@@ -24,16 +24,14 @@ const routes = [
   { path: '/comments', name: 'Comments', component: CommentView },
   { path: '/checkout', name: 'Checkout', component: CheckoutView, meta: { requiresAuth: true } },
   { path: '/orders', name: 'Orders', component: OrderHistoryView, meta: { requiresAuth: true } },
-
   { path: '/login', name: 'Login', component: LoginView },
   { path: '/register', name: 'Register', component: RegisterView },
   { path: '/profile', name: 'Profile', component: ProfileView, meta: { requiresAuth: true } },
   { path: '/reset-password', name: 'ResetPassword', component: ResetPasswordView },
   { path: '/productdetail/:id', name: 'productdetail', component: ProductDetailView },
-  {path: '/cart',name: 'cart', component: CartView},
-  {path: '/contact', name: 'contact',component: ContactView},
-  {path:'/tracking',name: 'tracking', component: () => import('@/views/TrackingView.vue')},
-
+  { path: '/cart', name: 'cart', component: CartView },
+  { path: '/contact', name: 'contact', component: ContactView },
+  { path: '/tracking', name: 'tracking', component: () => import('@/views/TrackingView.vue') },
 ]
 
 const router = createRouter({
@@ -41,11 +39,11 @@ const router = createRouter({
   routes,
 })
 
-// Route Guard untuk proteksi halaman
+// ✅ Ganti bagian ini aja
 router.beforeEach((to, from, next) => {
-  const userStore = useUserStore()
-  if (to.meta.requiresAuth && !userStore.isLoggedIn) {
-    next({ name: 'Login' }) // redirect ke login jika belum login
+  const user = JSON.parse(localStorage.getItem('user'))
+  if (to.meta.requiresAuth && !user) {
+    next({ name: 'Login' })
   } else {
     next()
   }

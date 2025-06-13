@@ -1,54 +1,55 @@
-<!-- src/views/OrderTrackingView.vue -->
 <template>
-  <div class="min-h-screen p-6 bg-gradient-to-br from-pink-100 to-purple-200">
-    <div class="max-w-xl mx-auto bg-white p-6 rounded-2xl shadow-lg">
-      <h2 class="text-2xl font-bold text-center text-purple-700 mb-6">Tracking Pesanan</h2>
-      <input
-        v-model="orderId"
-        type="text"
-        placeholder="Masukkan Order ID"
-        class="w-full p-3 border rounded-lg mb-4 focus:outline-none focus:ring-2 focus:ring-purple-400"
-      />
-      <button
-        @click="trackOrder"
-        class="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 px-4 rounded-lg transition"
-      >
-        Lacak Pesanan
-      </button>
+  <div class="max-w-xl mx-auto p-6">
+    <h1 class="text-2xl font-bold mb-4">Lacak Pesanan</h1>
+    <input
+      v-model="trackingCode"
+      type="text"
+      placeholder="Masukkan Kode Pelacakan (misal: DNX-12345)"
+      class="border p-2 rounded w-full mb-4"
+    />
+    <button
+      @click="trackOrder"
+      class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+    >
+      Cari Pesanan
+    </button>
 
-      <div v-if="trackingInfo" class="mt-6 bg-purple-100 p-4 rounded-lg">
-        <h3 class="font-semibold text-lg mb-2 text-purple-800">Status Pesanan:</h3>
-        <p><strong>ID:</strong> {{ trackingInfo.id }}</p>
-        <p><strong>Status:</strong> {{ trackingInfo.status }}</p>
-        <p><strong>Perkiraan Tiba:</strong> {{ trackingInfo.eta }}</p>
-      </div>
+    <div v-if="order" class="mt-6 bg-green-100 p-4 rounded shadow">
+      <h2 class="text-lg font-semibold">Status Pesanan</h2>
+      <p><strong>Kode:</strong> {{ order.trackingCode }}</p>
+      <p><strong>Nama:</strong> {{ order.name }}</p>
+      <p><strong>Status:</strong> {{ order.status }}</p>
+      <p><strong>Perkiraan Tiba:</strong> {{ order.eta }}</p>
+      <p><strong>Tanggal:</strong> {{ order.date }}</p>
+      <p><strong>Total:</strong> {{ formatRupiah(order.total) }}</p>
 
-      <div v-if="error" class="mt-4 text-red-500">{{ error }}</div>
+      <p class="mt-2 font-semibold">Item:</p>
+      <ul class="list-disc ml-6">
+        <li v-for="item in order.items" :key="item.id">
+          {{ item.title }} (x{{ item.quantity }}) - {{ formatRupiah(item.price) }}
+        </li>
+      </ul>
     </div>
+
+    <p v-if="searched && !order" class="text-red-600 mt-4">Pesanan tidak ditemukan.</p>
   </div>
 </template>
 
 <script setup>
 import { ref } from 'vue'
 
-const orderId = ref('')
-const trackingInfo = ref(null)
-const error = ref('')
-
-const dummyOrders = [
-  { id: 'ORD123', status: 'Dikirim', eta: '3 hari' },
-  { id: 'ORD456', status: 'Sedang dikemas', eta: '5 hari' },
-  { id: 'ORD789', status: 'Sampai tujuan', eta: 'Sudah diterima' },
-]
+const trackingCode = ref('')
+const order = ref(null)
+const searched = ref(false)
 
 function trackOrder() {
-  error.value = ''
-  trackingInfo.value = null
-  const result = dummyOrders.find(order => order.id === orderId.value.trim().toUpperCase())
-  if (result) {
-    trackingInfo.value = result
-  } else {
-    error.value = 'Order ID tidak ditemukan.'
-  }
+  const savedOrders = JSON.parse(localStorage.getItem('trackingOrders') || '[]')
+  order.value = savedOrders.find(o => o.trackingCode === trackingCode.value.trim())
+  searched.value = true
+}
+
+function formatRupiah(value) {
+  const idr = value * 15000
+  return idr.toLocaleString('id-ID', { style: 'currency', currency: 'IDR' })
 }
 </script>

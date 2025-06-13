@@ -3,7 +3,14 @@
     <h1 class="text-2xl font-bold mb-6">Register</h1>
     <form @submit.prevent="handleRegister" class="space-y-4">
       <input
-        v-model.trim="email"
+        v-model="name"
+        type="text"
+        placeholder="Nama Lengkap"
+        class="w-full p-2 border rounded"
+        required
+      />
+      <input
+        v-model="email"
         type="email"
         placeholder="Email"
         class="w-full p-2 border rounded"
@@ -20,11 +27,9 @@
         type="submit"
         class="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700 cursor-pointer"
       >
-        Register
+        Daftar
       </button>
     </form>
-    <p v-if="errorMessage" class="text-red-600 mt-2">{{ errorMessage }}</p>
-    <p v-if="successMessage" class="text-green-600 mt-2">{{ successMessage }}</p>
   </div>
 </template>
 
@@ -37,45 +42,29 @@ import { toast } from 'vue3-toastify'
 const router = useRouter()
 const userStore = useUserStore()
 
+const name = ref('')
 const email = ref('')
 const password = ref('')
-const errorMessage = ref('')
-const successMessage = ref('')
-
-function validate() {
-  errorMessage.value = ''
-  if (!email.value) {
-    errorMessage.value = 'Email wajib diisi'
-    return false
-  }
-  const emailRegex = /^\S+@\S+\.\S+$/
-  if (!emailRegex.test(email.value)) {
-    errorMessage.value = 'Format email tidak valid'
-    return false
-  }
-  if (!password.value) {
-    errorMessage.value = 'Password wajib diisi'
-    return false
-  }
-  if (password.value.length < 6) {
-    errorMessage.value = 'Password minimal 6 karakter'
-    return false
-  }
-  return true
-}
 
 const handleRegister = () => {
-  if (!validate()) return
+  const users = JSON.parse(localStorage.getItem('users')) || []
+  const isEmailUsed = users.some(u => u.email === email.value)
 
-  const newUser = { email: email.value, password: password.value }
-  if (userStore.register(newUser)) {
-    successMessage.value = 'Registrasi berhasil! Silakan login.'
-    errorMessage.value = ''
-    toast.success('Registrasi berhasil!')
-    router.push('/login')
-  } else {
-    errorMessage.value = 'Email sudah terdaftar!'
-    successMessage.value = ''
+  if (isEmailUsed) {
+    toast.error('Email sudah terdaftar!')
+    return
   }
+
+  const newUser = {
+    name: name.value,
+    email: email.value,
+    password: password.value,
+    photoURL: null
+  }
+
+  userStore.register(newUser)
+
+  toast.success('Registrasi berhasil! Anda sekarang login.')
+  router.push('/')
 }
 </script>

@@ -22,7 +22,9 @@
               </p>
             </div>
           </div>
-          <span class="font-semibold">Rp{{ (item.price * item.quantity).toLocaleString() }}</span>
+          <span class="font-semibold">
+            Rp{{ (item.price * item.quantity).toLocaleString() }}
+          </span>
         </li>
       </ul>
 
@@ -80,11 +82,13 @@ const handleCheckout = () => {
     toast.error('Keranjang kosong, tidak bisa checkout!')
     return
   }
-  
+
+  const trackingCode = 'DNX-' + Math.floor(10000 + Math.random() * 90000)
+
   const newOrder = {
     id: Date.now(),
-    name: name.value,           // Ganti customerName -> name
-    address: address.value,     // Ganti customerAddress -> address
+    name: name.value,
+    address: address.value,
     items: checkoutItems.value.map(item => ({
       id: item.id,
       title: item.title,
@@ -93,17 +97,25 @@ const handleCheckout = () => {
     })),
     total: totalPrice.value,
     date: new Date().toLocaleString(),
+    trackingCode,
+    status: 'Dikirim',
+    eta: '3-5 hari',
   }
 
   orderStore.addOrder(newOrder)
 
-  toast.success(`Pembelian oleh ${name.value} berhasil!`, {
+  // Simpan ke localStorage agar bisa diakses di halaman tracking
+  const existingOrders = JSON.parse(localStorage.getItem('trackingOrders') || '[]')
+  existingOrders.push(newOrder)
+  localStorage.setItem('trackingOrders', JSON.stringify(existingOrders))
+
+  toast.success(`Pembelian oleh ${name.value} berhasil! Kode pelacakan: ${trackingCode}`, {
     autoClose: 3000,
     position: 'top-right',
     theme: 'light',
   })
 
-  successMessage.value = 'Terima kasih telah berbelanja!'
+  successMessage.value = `Terima kasih telah berbelanja! Kode pelacakanmu: ${trackingCode}`
 
   cart.clearCart()
   name.value = ''

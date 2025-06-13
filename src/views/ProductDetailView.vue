@@ -40,9 +40,54 @@
       </div>
     </div>
 
-    <!-- Review -->
-    <ReviewForm v-if="product" :productId="product.id" @review-submitted="refreshReviews" />
-    <ReviewList v-if="product" :productId="product.id" />
+    <!-- Review Section -->
+    <div class="my-10">
+      <h2 class="text-xl font-bold mb-2">Tulis Review:</h2>
+      <textarea
+        v-model="newReview"
+        placeholder="Tulis ulasanmu di sini..."
+        class="w-full p-3 border rounded mb-2"
+        rows="3"
+      ></textarea>
+
+      <!-- Rating Bintang -->
+      <div class="flex items-center mb-2">
+        <span class="mr-2">Rating:</span>
+        <span
+          v-for="n in 5"
+          :key="n"
+          @click="selectedRating = n"
+          class="cursor-pointer text-2xl"
+          :class="n <= selectedRating ? 'text-yellow-400' : 'text-gray-300'"
+        >
+          ★
+        </span>
+      </div>
+
+      <button
+        @click="submitReview"
+        class="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700 cursor-pointer"
+      >
+        Kirim Review
+      </button>
+
+      <div v-if="reviews.length" class="mt-6">
+        <h3 class="text-lg font-semibold mb-2">Semua Review:</h3>
+        <div
+          v-for="(review, index) in reviews"
+          :key="index"
+          class="border-b py-3"
+        >
+          <p class="text-pink-600 font-bold">{{ review.name }}</p>
+          <p class="text-yellow-400 text-lg">
+            {{ '★'.repeat(review.rating || 0) }}
+            <span class="text-gray-300">{{ '★'.repeat(5 - (review.rating || 0)) }}</span>
+          </p>
+          <p class="text-gray-800">{{ review.text }}</p>
+          <p class="text-xs text-gray-400">{{ review.date }}</p>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -52,26 +97,31 @@ import { useRoute, useRouter } from 'vue-router'
 import axios from 'axios'
 import { useCartStore } from '../stores/cart'
 import { useWishlistStore } from '../stores/wishlist'
+import { useUserStore } from '../stores/user'
 import { toast } from 'vue3-toastify'
-
-import ReviewForm from '../components/ReviewForm.vue'
-import ReviewList from '../components/ReviewList.vue'
 
 const route = useRoute()
 const router = useRouter()
 const cart = useCartStore()
 const wishlist = useWishlistStore()
+const userStore = useUserStore()
+const user = userStore.user
 
 const product = ref(null)
 const loading = ref(true)
-
 const productId = route.params.id
+
+// Review
+const newReview = ref('')
+const selectedRating = ref(0)
+const reviews = ref([])
 
 onMounted(async () => {
   loading.value = true
   try {
     const res = await axios.get(`https://fakestoreapi.com/products/${productId}`)
     product.value = res.data
+    loadReviews()
   } catch (error) {
     console.error('Error fetch product:', error)
     product.value = null
@@ -80,8 +130,29 @@ onMounted(async () => {
   }
 })
 
-function refreshReviews() {
-  // Kosongkan dulu, kalau pakai sistem reactive bisa diisi ulang di sini
+function loadReviews() {
+  const stored = JSON.parse(localStorage.getItem(`reviews-${productId}`)) || []
+  reviews.value = stored
+}
+
+function submitReview() {
+  if (!newReview.value.trim() || selectedRating.value === 0) {
+    toast.error('Harap isi review dan pilih rating!')
+    return
+  }
+
+  const reviewData = {
+    name: user?.name || user?.email || 'Anonim',
+    text: newReview.value,
+    rating: selectedRating.value,
+    date: new Date().toLocaleString()
+  }
+
+  reviews.value.push(reviewData)
+  localStorage.setItem(`reviews-${productId}`, JSON.stringify(reviews.value))
+  newReview.value = ''
+  selectedRating.value = 0
+  toast.success('Review berhasil dikirim!')
 }
 
 function formatRupiah(value) {
