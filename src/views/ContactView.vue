@@ -2,7 +2,7 @@
   <section class="min-h-screen bg-white dark:bg-gray-900 text-gray-800 dark:text-white p-6">
     <div class="max-w-3xl mx-auto mt-12">
       <h1 class="text-3xl font-bold mb-6 text-center">Contact Us</h1>
-      
+
       <form @submit.prevent="submitForm" class="space-y-4 bg-gray-100 dark:bg-gray-800 p-6 rounded-xl shadow">
         <input v-model="form.name" type="text" placeholder="Your Name" class="w-full p-3 rounded-lg border" required />
         <input v-model="form.email" type="email" placeholder="Your Email" class="w-full p-3 rounded-lg border" required />
@@ -66,7 +66,9 @@ const askBot = async () => {
   chatInput.value = ''
 
   try {
-    const res = await axios.post('http://localhost:3000/chat', { message: question })
+    const res = await axios.post('https://dainslief-backend-production.up.railway.app/chat', {
+      message: question
+    })
     chats.value.push({ role: 'bot', message: res.data.response || '⚠️ Bot tidak memberikan jawaban.' })
   } catch (e) {
     chats.value.push({ role: 'bot', message: '❌ Gagal terhubung ke DainsleifBot. Coba lagi nanti.' })
