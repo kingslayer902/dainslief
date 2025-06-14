@@ -71,10 +71,10 @@
         Kirim Review
       </button>
 
-      <div v-if="reviews.length" class="mt-6">
+      <div v-if="filteredReviews.length" class="mt-6">
         <h3 class="text-lg font-semibold mb-2">Semua Review:</h3>
         <div
-          v-for="(review, index) in reviews"
+          v-for="(review, index) in filteredReviews"
           :key="index"
           class="border-b py-3"
         >
@@ -92,12 +92,13 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import axios from 'axios'
 import { useCartStore } from '../stores/cart'
 import { useWishlistStore } from '../stores/wishlist'
 import { useUserStore } from '../stores/user'
+import { useReviewStore } from '../stores/review'
 import { toast } from 'vue3-toastify'
 
 const route = useRoute()
@@ -106,22 +107,19 @@ const cart = useCartStore()
 const wishlist = useWishlistStore()
 const userStore = useUserStore()
 const user = userStore.user
+const reviewStore = useReviewStore()
 
+const productId = route.params.id
 const product = ref(null)
 const loading = ref(true)
-const productId = route.params.id
 
-// Review
 const newReview = ref('')
 const selectedRating = ref(0)
-const reviews = ref([])
 
 onMounted(async () => {
-  loading.value = true
   try {
     const res = await axios.get(`https://fakestoreapi.com/products/${productId}`)
     product.value = res.data
-    loadReviews()
   } catch (error) {
     console.error('Error fetch product:', error)
     product.value = null
@@ -130,10 +128,9 @@ onMounted(async () => {
   }
 })
 
-function loadReviews() {
-  const stored = JSON.parse(localStorage.getItem(`reviews-${productId}`)) || []
-  reviews.value = stored
-}
+const filteredReviews = computed(() => {
+  return reviewStore.getReviewsByProduct(parseInt(productId))
+})
 
 function submitReview() {
   if (!newReview.value.trim() || selectedRating.value === 0) {
@@ -142,14 +139,14 @@ function submitReview() {
   }
 
   const reviewData = {
+    productId: parseInt(productId),
     name: user?.name || user?.email || 'Anonim',
     text: newReview.value,
     rating: selectedRating.value,
     date: new Date().toLocaleString()
   }
 
-  reviews.value.push(reviewData)
-  localStorage.setItem(`reviews-${productId}`, JSON.stringify(reviews.value))
+  reviewStore.addReview(reviewData)
   newReview.value = ''
   selectedRating.value = 0
   toast.success('Review berhasil dikirim!')

@@ -3,6 +3,7 @@
     <div class="max-w-3xl mx-auto mt-12">
       <h1 class="text-3xl font-bold mb-6 text-center">Contact Us</h1>
 
+      <!-- Form Kontak -->
       <form @submit.prevent="submitForm" class="space-y-4 bg-gray-100 dark:bg-gray-800 p-6 rounded-xl shadow">
         <input v-model="form.name" type="text" placeholder="Your Name" class="w-full p-3 rounded-lg border" required />
         <input v-model="form.email" type="email" placeholder="Your Email" class="w-full p-3 rounded-lg border" required />
@@ -12,18 +13,34 @@
         </button>
       </form>
 
+      <!-- Medsos pakai Emoji -->
       <div class="text-center mt-8">
-        <p class="mb-2">Follow us:</p>
-        <div class="flex justify-center space-x-6 text-xl">
-          <a href="https://instagram.com" target="_blank" class="hover:text-pink-500">📷 Instagram</a>
-          <a href="https://facebook.com" target="_blank" class="hover:text-blue-600">📘 Facebook</a>
-          <a href="https://tiktok.com" target="_blank" class="hover:text-black">🎵 TikTok</a>
+        <p class="mb-2 font-medium">Hubungi kami di:</p>
+        <div class="flex flex-wrap justify-center gap-4 text-lg">
+          <a href="https://wa.me/6281234567890" target="_blank" class="flex items-center gap-2 hover:text-green-600">
+            💬 WhatsApp
+          </a>
+          <a href="https://instagram.com/dainsleif" target="_blank" class="flex items-center gap-2 hover:text-pink-500">
+            📷 Instagram
+          </a>
+          <a href="https://facebook.com/dainsleif" target="_blank" class="flex items-center gap-2 hover:text-blue-600">
+            📘 Facebook
+          </a>
+          <a href="https://tiktok.com/@dainsleif" target="_blank" class="flex items-center gap-2 hover:text-black">
+            🎵 TikTok
+          </a>
+          <a href="mailto:cs@dainsleif.com" target="_blank" class="flex items-center gap-2 hover:text-red-500">
+            ✉️ Email
+          </a>
         </div>
       </div>
 
-      <!-- Interaktif Bot -->
+      <!-- Live Chat Bot -->
       <div class="mt-12 p-6 bg-white dark:bg-gray-800 rounded-xl shadow">
         <h2 class="text-xl font-bold mb-4">Butuh bantuan cepat dari DainsleifBot?</h2>
+        <p class="text-sm mb-4 text-gray-600 dark:text-gray-300">
+          Coba tanya: <code>checkout</code>, <code>produk</code>, <code>gambar</code>, <code>alamat</code>, <code>login</code>
+        </p>
         <div class="space-y-4 max-h-96 overflow-y-auto">
           <div v-for="(chat, index) in chats" :key="index" class="p-3 rounded bg-gray-100 dark:bg-gray-700">
             <strong>{{ chat.role === 'user' ? 'Kamu:' : 'DainsleifBot:' }}</strong> {{ chat.message }}
@@ -35,7 +52,7 @@
           placeholder="Tanyakan sesuatu seperti 'cara checkout' atau 'kenapa gambar tidak tampil?'"
           class="w-full p-3 mt-4 rounded border dark:bg-gray-900"
         />
-        <button @click="askBot" class="mt-2 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Tanya</button>
+        <button @click="askBot" class="mt-2 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 cursor-pointer">Tanya</button>
       </div>
     </div>
   </section>
@@ -46,11 +63,10 @@ import { ref } from 'vue'
 import { toast } from 'vue3-toastify'
 import axios from 'axios'
 
-// Form Contact
+// Formulir
 const form = ref({ name: '', email: '', message: '' })
-
 const submitForm = () => {
-  toast.success('Your message has been sent!', { autoClose: 2000 })
+  toast.success('Pesanmu telah dikirim!', { autoClose: 2000 })
   form.value = { name: '', email: '', message: '' }
 }
 
@@ -66,7 +82,7 @@ const askBot = async () => {
   chatInput.value = ''
 
   try {
-    const res = await axios.post('https://dainslief-backend-production.up.railway.app/chat', {
+    const res = await axios.post('http://localhost:3000/chat', {
       message: question
     })
     chats.value.push({ role: 'bot', message: res.data.response || '⚠️ Bot tidak memberikan jawaban.' })
@@ -75,14 +91,3 @@ const askBot = async () => {
   }
 }
 </script>
-
-<style scoped>
-input, textarea {
-  transition: 0.2s;
-}
-input:focus, textarea:focus {
-  outline: none;
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.4);
-}
-</style>
