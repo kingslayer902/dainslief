@@ -19,6 +19,12 @@ export const useUserStore = defineStore('user', {
         ...newData
       }
       localStorage.setItem('user', JSON.stringify(this.user))
+    },
+    register(newUser) {
+      const users = JSON.parse(localStorage.getItem('users')) || []
+      users.push(newUser)
+      localStorage.setItem('users', JSON.stringify(users))
+      this.login(newUser)
     }
   }
 })
