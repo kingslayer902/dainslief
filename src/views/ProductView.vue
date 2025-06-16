@@ -2,12 +2,14 @@
   <div class="p-6 max-w-5xl mx-auto">
     <h1 class="text-3xl font-bold mb-6">Produk</h1>
 
-    <!-- Filter kategori -->
-    <div class="mb-4 flex space-x-4">
-      <button @click="selectedCategory = ''" :class="btnClass('')">Semua</button>
-      <button @click="selectedCategory = 'men clothing'" :class="btnClass('men clothing')">Baju Pria</button>
-      <button @click="selectedCategory = 'women clothing'" :class="btnClass('women clothing')">Baju Wanita</button>
-      <button disabled title="Kategori belum tersedia" :class="btnClass('kids clothing')">Baju Anak (coming soon)</button>
+    <!-- Filter kategori responsive scroll -->
+    <div class="mb-4 w-full overflow-auto">
+      <div class="flex space-x-4 w-max">
+        <button @click="selectedCategory = ''" :class="btnClass('')">Semua</button>
+        <button @click="selectedCategory = 'men clothing'" :class="btnClass('men clothing')">Baju Pria</button>
+        <button @click="selectedCategory = 'women clothing'" :class="btnClass('women clothing')">Baju Wanita</button>
+        <button disabled title="Kategori belum tersedia" :class="btnClass('kids clothing')">Baju Anak (coming soon)</button>
+      </div>
     </div>
 
     <!-- Input pencarian -->
@@ -31,14 +33,12 @@
           :key="product.id"
           class="border rounded-lg p-4 flex flex-col items-center shadow hover:shadow-lg transition"
         >
-          <!-- Gambar produk klik ke detail -->
           <img
             :src="product.image"
             :alt="product.title"
             class="w-32 h-32 object-contain mb-4 cursor-pointer"
             @click="goToDetail(product.id)"
           />
-          <!-- Judul produk klik ke detail -->
           <h2
             class="text-lg font-semibold text-center mb-1 cursor-pointer"
             @click="goToDetail(product.id)"
@@ -46,12 +46,10 @@
             {{ product.title }}
           </h2>
 
-          <!-- Rating -->
           <div class="text-yellow-500 text-sm mb-2">
             ★ {{ getAverageRating(product.id) }}
           </div>
 
-          <!-- Tombol Favorite -->
           <button
             @click="wishlist.toggleWishlist(product)"
             class="text-red-500 text-xl mb-2 hover:scale-110 transition"
@@ -80,6 +78,7 @@
     </div>
   </div>
 </template>
+
 
 <script setup>
 import { ref, computed } from 'vue'
