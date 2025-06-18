@@ -13,7 +13,7 @@
         </button>
       </form>
 
-      <!-- Medsos pakai Emoji -->
+      <!-- Medsos -->
       <div class="text-center mt-8">
         <p class="mb-2 font-medium">Hubungi kami di:</p>
         <div class="flex flex-wrap justify-center gap-4 text-lg">
@@ -29,36 +29,38 @@
       <div class="mt-12 p-6 bg-white dark:bg-gray-800 rounded-xl shadow">
         <h2 class="text-xl font-bold mb-4">Butuh bantuan cepat dari DainsleifBot?</h2>
         <p class="text-sm mb-4 text-gray-600 dark:text-gray-300">
-          Coba tanya: <code>checkout</code>, <code>produk</code>, <code>gambar</code>, <code>alamat</code>, <code>login</code>
+          Coba tanya: <code>produk</code>, <code>checkout</code>, <code>gambar</code>, <code>alamat</code>, <code>login</code>, dll.
         </p>
-        <div class="space-y-4 max-h-96 overflow-y-auto">
+        <div class="space-y-4 max-h-96 overflow-y-auto pr-2" ref="chatBox">
           <div
             v-for="(chat, index) in chats"
             :key="index"
             class="p-3 rounded bg-gray-100 dark:bg-gray-700"
           >
-            <strong>{{ chat.role === 'user' ? 'Kamu:' : 'DainsleifBot:' }}</strong> {{ chat.text }}
+            <strong>{{ chat.role === 'user' ? 'Kamu:' : '🤖 DainsleifBot:' }}</strong> {{ chat.text }}
           </div>
         </div>
-        <input
-          v-model="chatInput"
-          @keyup.enter="askBot"
-          placeholder="Tanyakan sesuatu seperti 'cara checkout' atau 'kenapa gambar tidak tampil?'"
-          class="w-full p-3 mt-4 rounded border dark:bg-gray-900"
-        />
-        <button
-          @click="askBot"
-          class="mt-2 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 cursor-pointer"
-        >
-          Tanya
-        </button>
+        <div class="mt-4 flex gap-2">
+          <input
+            v-model="chatInput"
+            @keyup.enter="askBot"
+            placeholder="Tanyakan sesuatu..."
+            class="flex-1 p-3 rounded border dark:bg-gray-900"
+          />
+          <button
+            @click="askBot"
+            class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+          >
+            Tanya
+          </button>
+        </div>
       </div>
     </div>
   </section>
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, watch, nextTick } from 'vue'
 import { toast } from 'vue3-toastify'
 import { useBotStore } from '@/stores/bot'
 
@@ -69,14 +71,26 @@ const submitForm = () => {
   form.value = { name: '', email: '', message: '' }
 }
 
-// Bot Store
+// Bot Chat
 const bot = useBotStore()
 const chatInput = ref('')
 const chats = computed(() => bot.history)
 
+// Auto-scroll ke bawah saat ada chat baru
+const chatBox = ref(null)
+watch(chats, async () => {
+  await nextTick()
+  if (chatBox.value) {
+    chatBox.value.scrollTop = chatBox.value.scrollHeight
+  }
+})
+
 const askBot = () => {
   const question = chatInput.value.trim()
-  if (!question) return
+  if (!question) {
+    toast.warning('Isi dulu pertanyaannya ya 😅')
+    return
+  }
   chatInput.value = ''
   bot.sendMessage(question)
 }

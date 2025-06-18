@@ -2,8 +2,8 @@
   <div v-if="user" class="max-w-md mx-auto mt-12 bg-white p-6 shadow rounded text-center">
     <div class="mb-4">
       <img
-        v-if="formPhotoURL"
-        :src="formPhotoURL"
+        v-if="formPhotoDataURL"
+        :src="formPhotoDataURL"
         alt="Profile Photo"
         class="w-24 h-24 rounded-full mx-auto object-cover"
       />
@@ -31,12 +31,12 @@
       </label>
 
       <label class="block">
-        <span class="text-gray-700">Photo URL</span>
+        <span class="text-gray-700">Upload Photo</span>
         <input
-          v-model="formPhotoURL"
-          type="url"
+          type="file"
+          accept="image/*"
           class="mt-1 block w-full border rounded p-2"
-          placeholder="Link to your photo"
+          @change="handlePhotoUpload"
         />
       </label>
 
@@ -71,15 +71,29 @@ const router = useRouter()
 const user = computed(() => userStore.user)
 
 const loading = ref(false)
-
 const formName = ref('')
-const formPhotoURL = ref('')
 const formEmail = ref('')
+const formPhotoDataURL = ref('')
 
+// Inisialisasi form dari user
 const initForm = () => {
   formName.value = user.value?.name || ''
-  formPhotoURL.value = user.value?.photoURL || ''
   formEmail.value = user.value?.email || ''
+  formPhotoDataURL.value = user.value?.photoDataURL || ''
+}
+
+// Handle upload file
+function handlePhotoUpload(event) {
+  const file = event.target.files[0]
+  if (file && file.type.startsWith('image/')) {
+    const reader = new FileReader()
+    reader.onload = () => {
+      formPhotoDataURL.value = reader.result
+    }
+    reader.readAsDataURL(file)
+  } else {
+    toast.error('Mohon unggah file gambar yang valid!')
+  }
 }
 
 watch(user, (newUser) => {
@@ -90,23 +104,9 @@ watch(user, (newUser) => {
   }
 }, { immediate: true })
 
-function isValidUrl(string) {
-  try {
-    if (!string) return true
-    new URL(string)
-    return true
-  } catch (_) {
-    return false
-  }
-}
-
 function updateProfile() {
   if (!formName.value.trim()) {
     toast.error('Nama tidak boleh kosong')
-    return
-  }
-  if (!isValidUrl(formPhotoURL.value)) {
-    toast.error('URL foto tidak valid')
     return
   }
 
@@ -114,7 +114,7 @@ function updateProfile() {
   try {
     userStore.updateProfile({
       name: formName.value.trim(),
-      photoURL: formPhotoURL.value.trim() || null
+      photoDataURL: formPhotoDataURL.value || null
     })
     toast.success('Profil berhasil diperbarui!')
   } catch (e) {

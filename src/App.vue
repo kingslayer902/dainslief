@@ -7,9 +7,17 @@
     <Footer />
   </div>
 </template>
+
 <script setup>
 import Navbar from './components/Navbar.vue'
-// import Footer dari components, pastikan filenya ada
 import Footer from './components/Footer.vue'
-</script>
 
+import { onMounted } from 'vue'
+import { useCartStore } from './stores/cart'
+
+const cartStore = useCartStore()
+
+onMounted(() => {
+  cartStore.loadFromLocalStorage()
+})
+</script>

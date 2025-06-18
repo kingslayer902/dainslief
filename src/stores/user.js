@@ -1,4 +1,3 @@
-// src/stores/user.js
 import { defineStore } from 'pinia'
 
 export const useUserStore = defineStore('user', {
@@ -19,7 +18,7 @@ export const useUserStore = defineStore('user', {
       localStorage.removeItem('user')
     },
 
-    // Update profil: nama, foto, dll
+    // Update profil: nama, foto (base64)
     updateProfile(newData) {
       this.user = {
         ...this.user,

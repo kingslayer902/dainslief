@@ -1,4 +1,3 @@
-// src/stores/cart.js
 import { defineStore } from 'pinia'
 
 export const useCartStore = defineStore('cart', {
@@ -64,5 +63,8 @@ export const useCartStore = defineStore('cart', {
       if (state.buyNowItem) return [state.buyNowItem]
       return state.items
     },
+    count: (state) => {
+      return state.items.reduce((total, item) => total + item.quantity, 0)
+    }
   },
 })

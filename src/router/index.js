@@ -9,7 +9,8 @@ import CommentView from '../views/CommentView.vue'
 import CheckoutView from '@/views/CheckoutView.vue'
 import OrderHistoryView from '@/views/OrderHistoryView.vue'
 import LoginView from '@/views/LoginView.vue'
-import RegisterView from '@/views/RegisterView.vue'
+// Hapus RegisterView karena sudah tidak dipakai
+// import RegisterView from '@/views/RegisterView.vue'
 import ProfileView from '@/views/ProfileView.vue'
 import ResetPasswordView from '@/views/ResetPasswordView.vue'
 import ProductDetailView from '@/views/ProductDetailView.vue'
@@ -25,7 +26,8 @@ const routes = [
   { path: '/checkout', name: 'Checkout', component: CheckoutView, meta: { requiresAuth: true } },
   { path: '/orders', name: 'Orders', component: OrderHistoryView, meta: { requiresAuth: true } },
   { path: '/login', name: 'Login', component: LoginView },
-  { path: '/register', name: 'Register', component: RegisterView },
+  // Hapus route register
+  // { path: '/register', name: 'Register', component: RegisterView },
   { path: '/profile', name: 'Profile', component: ProfileView, meta: { requiresAuth: true } },
   { path: '/reset-password', name: 'ResetPassword', component: ResetPasswordView },
   { path: '/productdetail/:id', name: 'productdetail', component: ProductDetailView },
@@ -39,7 +41,7 @@ const router = createRouter({
   routes,
 })
 
-// ✅ Ganti bagian ini aja
+// Middleware auth check
 router.beforeEach((to, from, next) => {
   const user = JSON.parse(localStorage.getItem('user'))
   if (to.meta.requiresAuth && !user) {
