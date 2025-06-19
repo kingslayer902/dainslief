@@ -1,60 +1,51 @@
 <template>
-  <section
-  class="relative bg-gradient-to-br from-purple-700 via-pink-600 to-red-500 min-h-screen flex flex-col justify-center items-center text-white px-6 py-24"
->
-
-
-    <div class="max-w-4xl text-center space-y-6">
-      <h1 class="text-5xl font-extrabold drop-shadow-lg animate-fadeInDown">
-        Selamat Datang di <span class="text-yellow-300">Dainsleif</span>
+  <section class="bg-[#16161A] text-[#F9F9F9] min-h-screen px-6 py-20">
+    <!-- Hero Section -->
+    <div class="flex flex-col items-center justify-center text-center mb-20">
+      <h1 class="text-4xl md:text-6xl font-extrabold text-[#7F5AF0] drop-shadow-lg animate-fade-down">
+        Dainsleif Digital
       </h1>
-      <p class="text-lg md:text-xl max-w-3xl mx-auto leading-relaxed animate-fadeInUp">
-        Toko online terpercaya dengan berbagai produk trendi dan berkualitas tinggi.  
-        Temukan fashion, aksesori, dan gadget terbaru yang siap mempercantik hari-harimu!
+      <p class="text-lg md:text-xl mt-4 text-gray-300 max-w-2xl animate-fade-up">
+        Kreator solusi digital untuk brand, produk, dan jasa yang ingin tampil beda dan berkelas.
       </p>
-      <button
-        @click="$router.push('/product')"
-        class="mt-6 bg-yellow-400 text-purple-900 font-bold py-3 px-8 rounded-full shadow-lg hover:bg-yellow-300 transition duration-300 animate-bounce cursor-pointer"
+      <a
+        :href="waLink"
+        target="_blank"
+        class="mt-8 inline-block px-6 py-3 bg-[#2CB67D] text-black font-semibold rounded hover:bg-[#26a872] transition-all shadow-lg animate-fade-in"
       >
-        Jelajahi Produk Kami
-      </button>
+        Hubungi Kami via WhatsApp
+      </a>
     </div>
 
-    <!-- Decorative floating circles -->
-    <div
-      class="absolute rounded-full bg-yellow-300 opacity-30 w-36 h-36 top-10 left-10 animate-pulse"
-    ></div>
-    <div
-      class="absolute rounded-full bg-pink-400 opacity-20 w-56 h-56 bottom-20 right-20 animate-ping"
-    ></div>
+    <!-- Testimoni -->
+    <TestimoniSection />
+
+    <!-- FAQ -->
+    <FAQSection />
   </section>
 </template>
 
+<script setup>
+import TestimoniSection from '@/components/TestimoniSection.vue'
+import FAQSection from '@/components/FAQSection.vue'
+
+const waLink = 'https://wa.me/6289505024468'
+</script>
+
 <style scoped>
-@keyframes fadeInDown {
-  0% {
-    opacity: 0;
-    transform: translateY(-20px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
+@keyframes fade-down {
+  0% { opacity: 0; transform: translateY(-20px); }
+  100% { opacity: 1; transform: translateY(0); }
 }
-@keyframes fadeInUp {
-  0% {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
+@keyframes fade-up {
+  0% { opacity: 0; transform: translateY(20px); }
+  100% { opacity: 1; transform: translateY(0); }
 }
-.animate-fadeInDown {
-  animation: fadeInDown 1s ease forwards;
+@keyframes fade-in {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
 }
-.animate-fadeInUp {
-  animation: fadeInUp 1.2s ease forwards;
-}
+.animate-fade-down { animation: fade-down 0.8s ease-out; }
+.animate-fade-up { animation: fade-up 1s ease-out; }
+.animate-fade-in { animation: fade-in 1.5s ease-out; }
 </style>
