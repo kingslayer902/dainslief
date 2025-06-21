@@ -29,7 +29,8 @@
 import TestimoniSection from '@/components/TestimoniSection.vue'
 import FAQSection from '@/components/FAQSection.vue'
 
-const waLink = 'https://wa.me/6289505024468'
+// Link dengan pesan default untuk konsultasi
+const waLink = 'https://wa.me/6289505024468?text=Halo%20Dainsleif!%20Saya%20ingin%20konsultasi%20tentang%20layanan%20digital%20Anda.'
 </script>
 
 <style scoped>

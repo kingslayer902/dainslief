@@ -1,38 +1,40 @@
 <template>
   <div class="fixed bottom-4 right-4 z-50">
-    <!-- Kotak chat -->
-    <div
-      v-if="open"
-      class="bg-white text-black w-72 p-4 rounded-lg shadow-lg border border-gray-300"
-    >
-      <div class="font-bold text-[#7F5AF0] mb-2">💬 Dainsleif Bot</div>
-
-      <!-- Isi percakapan -->
+    <!-- Kotak Chat -->
+    <transition name="fade">
       <div
-        ref="chatBody"
-        class="h-32 overflow-y-auto text-sm bg-gray-100 p-2 rounded space-y-2"
+        v-if="open"
+        class="bg-white text-black w-72 p-4 rounded-lg shadow-lg border border-gray-300"
       >
-        <div v-for="(msg, index) in messages" :key="index">
-          <div
-            :class="msg.from === 'user'
-              ? 'text-right text-[#2CB67D] bg-[#E0F7ED] px-3 py-1 rounded-lg ml-10'
-              : 'text-left  text-[#7F5AF0] bg-[#ECE8FF] px-3 py-1 rounded-lg mr-10'"
-          >
-            {{ msg.text }}
+        <div class="font-bold text-[#7F5AF0] mb-2">💬 Dainsleif Bot</div>
+
+        <!-- Isi Chat -->
+        <div
+          ref="chatBody"
+          class="h-32 overflow-y-auto text-sm bg-gray-100 p-2 rounded space-y-2"
+        >
+          <div v-for="(msg, index) in messages" :key="index">
+            <div
+              :class="msg.from === 'user'
+                ? 'text-right text-[#2CB67D] bg-[#E0F7ED] px-3 py-1 rounded-lg ml-10'
+                : 'text-left text-[#7F5AF0] bg-[#ECE8FF] px-3 py-1 rounded-lg mr-10'"
+            >
+              {{ msg.text }}
+            </div>
           </div>
         </div>
+
+        <!-- Input -->
+        <input
+          v-model="input"
+          @keyup.enter="kirimPesan"
+          placeholder="Tulis pesan..."
+          class="w-full mt-2 border border-gray-300 p-2 rounded text-sm outline-none"
+        />
       </div>
+    </transition>
 
-      <!-- Kolom input -->
-      <input
-        v-model="input"
-        @keyup.enter="kirimPesan"
-        placeholder="Tulis pesan..."
-        class="w-full mt-2 border border-gray-300 p-2 rounded text-sm outline-none"
-      />
-    </div>
-
-    <!-- Tombol buka chat + Notifikasi 🔴 -->
+    <!-- Tombol Chat -->
     <button
       @click="toggleChat"
       class="relative mt-2 p-3 rounded-full bg-[#7F5AF0] text-white shadow-xl hover:bg-purple-700"
@@ -47,7 +49,7 @@
 </template>
 
 <script setup>
-import { ref, watch, nextTick } from 'vue'
+import { ref, watch, nextTick, onMounted } from 'vue'
 import { useBotStore } from '@/stores/botStore'
 import { storeToRefs } from 'pinia'
 
@@ -81,4 +83,23 @@ watch(
   },
   { deep: true }
 )
+
+onMounted(() => {
+  // Tambahkan greeting saat pertama buka chat
+  if (messages.value.length === 0) {
+    bot.sendMessage('Halo! Ada yang bisa kami bantu hari ini?', 'bot')
+  }
+})
 </script>
+
+<style scoped>
+.fade-enter-active,
+.fade-leave-active {
+  transition: all 0.3s ease;
+}
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+  transform: translateY(10px);
+}
+</style>

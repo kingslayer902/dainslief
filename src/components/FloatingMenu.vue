@@ -3,21 +3,21 @@
     <!-- Submenu -->
     <transition name="fade">
       <div v-if="open" class="flex flex-col space-y-2 items-end">
-        <button @click="handleTracking" class="menu-item bg-[#2CB67D] cursor-pointer">🔍 Tracking</button>
-        <button @click="handleAdmin" class="menu-item bg-[#7F5AF0] cursor-pointer">🛠️ Admin</button>
-        <button @click="handleChat" class="menu-item bg-[#FF8906] cursor-pointer">💬 Live Chat</button>
+        <button @click="toggleTracking" class="menu-item bg-[#2CB67D]">🔍 Tracking</button>
+        <button @click="toggleAdmin" class="menu-item bg-[#7F5AF0]">🛠️ Admin</button>
+        <button @click="toggleChat" class="menu-item bg-[#FF8906]">💬 Live Chat</button>
       </div>
     </transition>
 
-    <!-- Tombol ☰ -->
+    <!-- Tombol utama -->
     <button
       @click="toggleMenu"
-      class="p-4 rounded-full bg-[#1515d6] text-white shadow-xl hover:scale-105 transition cursor-pointer"
+      class="p-4 rounded-full bg-[#1515d6] text-white shadow-xl hover:rotate-90 transition-all duration-300"
     >
       ☰
     </button>
 
-    <!-- Bubble-bubble -->
+    <!-- Bubble Components -->
     <LiveChat v-if="showChat" />
     <TrackingBubble v-if="showTracking" />
     <AdminBubble v-if="showAdmin" />
@@ -26,14 +26,11 @@
 
 <script setup>
 import { ref } from 'vue'
-import { useRouter } from 'vue-router'
 import LiveChat from './LiveChat.vue'
 import TrackingBubble from './TrackingBubble.vue'
 import AdminBubble from './AdminBubble.vue'
 
 const open = ref(false)
-const router = useRouter()
-
 const showChat = ref(false)
 const showTracking = ref(false)
 const showAdmin = ref(false)
@@ -42,20 +39,22 @@ function toggleMenu() {
   open.value = !open.value
 }
 
-// Fungsi gabungan redirect + toggle bubble
-function handleChat() {
-  router.push('/kontak')
+function toggleChat() {
   showChat.value = !showChat.value
+  showTracking.value = false
+  showAdmin.value = false
 }
 
-function handleTracking() {
-  router.push('/tracking')
+function toggleTracking() {
   showTracking.value = !showTracking.value
+  showChat.value = false
+  showAdmin.value = false
 }
 
-function handleAdmin() {
-  router.push('/admin')
+function toggleAdmin() {
   showAdmin.value = !showAdmin.value
+  showChat.value = false
+  showTracking.value = false
 }
 </script>
 

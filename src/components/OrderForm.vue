@@ -4,8 +4,7 @@
       <h2 class="text-lg font-semibold text-[#7F5AF0]">Form Pemesanan</h2>
 
       <input v-model="nama" type="text" placeholder="Nama lengkap" class="input-style" />
-      <input v-model="nomor" type="text" placeholder="Nomor WhatsApp" class="input-style" />
-      <input v-model="produk" type="text" placeholder="Nama produk" class="input-style" />
+      <input v-model="alamat" type="text" placeholder="Alamat lengkap" class="input-style" />
 
       <div class="flex justify-between items-center mt-3">
         <button @click="kirimPesanan" class="bg-[#2CB67D] text-white px-4 py-2 rounded hover:bg-emerald-600">
@@ -18,51 +17,32 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import { useOrderStore } from '@/stores/orderStore'
+import { ref, watch } from 'vue'
 import { toast } from 'vue3-toastify'
 import 'vue3-toastify/dist/index.css'
 
 const props = defineProps({
   show: Boolean,
-  produkNama: String
+  produkNama: String,
+  produkHarga: String
 })
 
 const emit = defineEmits(['close'])
 
 const nama = ref('')
-const nomor = ref('')
-const produk = ref(props.produkNama || '')
-
-const orderStore = useOrderStore()
+const alamat = ref('')
 
 function kirimPesanan() {
-  if (!nama.value || !nomor.value || !produk.value) {
+  if (!nama.value || !alamat.value) {
     toast.error('Isi semua data dulu ya!')
     return
   }
 
-  orderStore.setOrder({
-    nama: nama.value,
-    nomor: nomor.value,
-    produk: produk.value
-  })
-
-  const noHP = nomor.value.replace(/^0/, '62')
-  const waURL = `https://wa.me/${noHP}?text=Halo, saya ingin pesan ${produk.value}`
+  const pesan = `Halo Dainsleif! Saya ingin memesan:\n\nProduk: ${props.produkNama} \nNama: ${nama.value}\nAlamat: ${alamat.value}`
+  const waURL = `https://wa.me/6289636446722?text=${encodeURIComponent(pesan)}`
   window.open(waURL, '_blank')
 
   toast.success('Pesanan berhasil dikirim!')
   emit('close')
 }
 </script>
-
-<style scoped>
-.input-style {
-  width: 100%;
-  border: 1px solid #ccc;
-  padding: 0.5rem;
-  border-radius: 0.375rem;
-  font-size: 0.875rem;
-}
-</style>
